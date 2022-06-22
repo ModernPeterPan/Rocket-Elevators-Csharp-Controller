@@ -1,0 +1,5 @@
+C:\Users\user1\Desktop\Prog Folder\CodeBoxx\3W - Go & C#\Rocket-Elevators-Csharp-Controller\Commercial_Controller\obj\Debug\net6.0\Commercial_Controller.csproj.AssemblyReference.cache
+C:\Users\user1\Desktop\Prog Folder\CodeBoxx\3W - Go & C#\Rocket-Elevators-Csharp-Controller\Commercial_Controller\obj\Debug\net6.0\Commercial_Controller.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\user1\Desktop\Prog Folder\CodeBoxx\3W - Go & C#\Rocket-Elevators-Csharp-Controller\Commercial_Controller\obj\Debug\net6.0\Commercial_Controller.AssemblyInfoInputs.cache
+C:\Users\user1\Desktop\Prog Folder\CodeBoxx\3W - Go & C#\Rocket-Elevators-Csharp-Controller\Commercial_Controller\obj\Debug\net6.0\Commercial_Controller.AssemblyInfo.cs
+C:\Users\user1\Desktop\Prog Folder\CodeBoxx\3W - Go & C#\Rocket-Elevators-Csharp-Controller\Commercial_Controller\obj\Debug\net6.0\Commercial_Controller.csproj.CoreCompileInputs.cache
