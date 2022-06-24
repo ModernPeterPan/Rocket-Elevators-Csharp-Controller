@@ -5,15 +5,16 @@ namespace Commercial_Controller
 {
     public class Elevator
     {
-        int ID;
+        public int ID;
         public string status;
-        int amountOfFloors;
+        public int amountOfFloors;
         public int currentFloor;
-        int screenDisplay;
-        Door door;
+        public int screenDisplay;
+        public Door door;
         public string direction;
-        List<int> floorRequestList;
-        bool overweight;
+        public List<int> floorRequestsList;
+        public List<int> completedRequestsList;
+        public bool overweight;
 
         public Elevator(int _id, string _status, int _amountOfFloors, int _currentFloor)
         {
@@ -22,50 +23,48 @@ namespace Commercial_Controller
             this.amountOfFloors = _amountOfFloors;
             this.currentFloor = _currentFloor;
             this.door = new Door(_id, "closed");
-            this.floorRequestList = new List<int>();
+            this.floorRequestsList = new List<int>();
+            this.completedRequestsList = new List<int>();
             this.direction = null;
             this.overweight = false;
             
         }
         public void move()
         {
-            while (this.floorRequestList.Count != 0)
+            while (this.floorRequestsList.Count != 0)
             {
-                int destination = this.floorRequestList[0];
+                //this.sortFloorList();
+                int destination = this.floorRequestsList[0];
                 this.status = "moving";
-                if(this.currentFloor < destination)
+                if(this.direction == "up")
                 {
-                    this.direction = "up";
-                    this.sortFloorList();
                     while(this.currentFloor < destination)
                     {
                         this.currentFloor++;
-                        this.screenDisplay = this.currentFloor;
                     }
-                } else if(this.currentFloor > destination){
-                   direction = "down";
-                   this.sortFloorList(); 
-                   while(this.currentFloor < destination)
+                } else if(this.direction == "down"){
+                   while(this.currentFloor > destination)
                     {
                         this.currentFloor--;
-                        this.screenDisplay = this.currentFloor;
                     }
                 }
                 this.status = "stopped";
                 this.operateDoors();
-                this.floorRequestList.Remove(0);
+                this.floorRequestsList.RemoveAt(0);
+                this.completedRequestsList.Add(destination);
             }
             this.status = "idle";
+            this.direction = "";
         }
         
         public void sortFloorList()
         {
             if(this.direction == "up")
             {
-                this.floorRequestList.Sort();
+                this.floorRequestsList.Sort();
             } else {
-                this.floorRequestList.Sort();
-                this.floorRequestList.Reverse();
+                this.floorRequestsList.Sort();
+                this.floorRequestsList.Reverse();
             }
         }
 
@@ -94,9 +93,9 @@ namespace Commercial_Controller
 
         public void addNewRequest(int requestedFloor)
         {
-            if(!this.floorRequestList.Contains(requestedFloor))
+            if(!this.floorRequestsList.Contains(requestedFloor))
             {
-                this.floorRequestList.Add(requestedFloor);
+                this.floorRequestsList.Add(requestedFloor);
             }
             if(this.currentFloor < requestedFloor)
             {

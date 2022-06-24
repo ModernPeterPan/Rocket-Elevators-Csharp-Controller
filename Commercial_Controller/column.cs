@@ -5,17 +5,17 @@ namespace Commercial_Controller
 {
     public class Column
     {
-        int elevatorID;
-        int callButtonID;
-        int ID;
+        public int elevatorID;
+        public int callButtonID;
+        public int ID;
         string status;
         int amountOfFloors;
         int amountOfElevators;
-        List<Elevator> elevatorsList;
-        List<CallButton> callButtonsList;
-        List<int> servedFloorsList;
-        CallButton callButton;
-        Elevator elevator;
+        public List<Elevator> elevatorsList;
+        public List<CallButton> callButtonsList;
+        public List<int> servedFloorsList;
+        public CallButton callButton;
+        public Elevator elevator;
 
         public Column(int _id, string _status,int _amountOfFloors, int _amountOfElevators, List<int> _servedFloors, bool _isBasement)
         {
@@ -69,25 +69,24 @@ namespace Commercial_Controller
         //Simulate when a user press a button on a floor to go back to the first floor
         public Elevator requestElevator(int userPosition, string direction)
         {
-            //Pourquoi la vie?
-            int _requestedFloor = 0;
             Elevator elevator = this.findElevator(userPosition, direction);
-            elevator.addNewRequest(_requestedFloor);
+            elevator.addNewRequest(userPosition);
             elevator.move();
 
             elevator.addNewRequest(1);
             elevator.move();
+            return elevator;
         }
 
-        public int findElevator(int requestedFloor, string requestedDirection)
+        public Elevator findElevator(int requestedFloor, string requestedDirection)
         {
-            int bestElevator = 0;
+            BestElevatorInformations bestElevatorInformations;
+            Elevator bestElevator = null;
             int bestScore = 6;
             int referenceGap = 10000000;
-            int bestElevatorInformations = 0;
             if(requestedFloor == 1)
             {
-                foreach (int elevator in this.elevatorsList)
+                foreach (Elevator elevator in this.elevatorsList)
                 {
                     //How to get from another class file??
                     //The elevator is at the lobby and already has some requests. It is about to leave but has not yet departed
@@ -110,7 +109,6 @@ namespace Commercial_Controller
                     } else {
                         bestElevatorInformations = this.checkIfElevatorIsBetter(5, elevator, bestScore, referenceGap, bestElevator, requestedFloor);
                     }
-                    //bestElevatorInformations stu une class?
                     bestElevator = bestElevatorInformations.bestElevator;
                     bestScore = bestElevatorInformations.bestScore;
                     referenceGap = bestElevatorInformations.referenceGap;
@@ -142,23 +140,23 @@ namespace Commercial_Controller
             return bestElevator;
         }
 
-        public int checkIfElevatorIsBetter(int scoreToCheck, int newElevator, int bestScore, int referenceGap, int bestElevator, int floor)
+        public BestElevatorInformations checkIfElevatorIsBetter(int scoreToCheck, Elevator newElevator, int bestScore, int referenceGap, Elevator bestElevator, int floor)
         {
             if(scoreToCheck < bestScore)
             {
                 bestScore = scoreToCheck;
                 bestElevator = newElevator;
                 //How to use ABSOLUTE VALUE
-                referenceGap = Mathf.Abs(newElevator.currentFloor - floor);
+                referenceGap = Math.Abs(newElevator.currentFloor - floor);
             } else if (bestScore == scoreToCheck){
-                int gap = Mathf.Abs(newElevator.currentFloor - floor);
+                int gap = Math.Abs(newElevator.currentFloor - floor);
                 if(referenceGap > gap){
                     bestElevator = newElevator;
                     referenceGap = gap;
                 }
             }
-            return 0; /*bestElevator AND bestScore AND referenceGap AS bestElevatorInformations
-            return bestElevatorInformations*/
+            BestElevatorInformations bestElevatorInformations = new BestElevatorInformations(bestElevator, bestScore, referenceGap);
+            return bestElevatorInformations;
         }
     }
 }

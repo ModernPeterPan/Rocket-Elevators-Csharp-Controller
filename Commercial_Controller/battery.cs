@@ -5,34 +5,34 @@ namespace Commercial_Controller
 {
     public class Battery
     {
-        static int columnID;
-        static int floorRequestButtonID = 1;
-        static int floor;
-        int ID;
-        string status;
-        List<int> columnsList;
-        List<int> floorRequestsButtonsList;
+        private int columnID = 1;
+        public static int floorRequestButtonID = 1;
+        public static int floor;
+        public int ID;
+        public string status;
+        public List<Column> columnsList;
+        List<FloorRequestButton> floorRequestButtonsList;
         List<int> servedFloors;
 
         public Battery(int _id, int _amountOfColumns, int _amountOfFloors, int _amountOfBasements, int _amountOfElevatorPerColumn)
         {
             this.ID = _id;
             this.status = "online";
-            this.columnsList = new List<int>();
-            this.floorRequestsButtonsList = new List<int>();
+            this.columnsList = new List<Column>();
+            this.floorRequestButtonsList = new List<FloorRequestButton>();
 
             if (_amountOfBasements > 0)
             {
-            this.createBasementFloorRequestButtons(_amountOfBasements);
-            this.createBasementColumn(_amountOfBasements, _amountOfElevatorPerColumn);
+            createBasementFloorRequestButtons(_amountOfBasements);
+            createBasementColumn(_amountOfBasements, _amountOfElevatorPerColumn);
             _amountOfColumns--;
             }
 
-            this.createFloorRequestButtons(_amountOfFloors);
-            this.createColumns(_amountOfColumns, _amountOfFloors, _amountOfElevatorPerColumn);
+            createFloorRequestButtons(_amountOfFloors);
+            createColumns(_amountOfColumns, _amountOfFloors, _amountOfElevatorPerColumn);
         }
 
-        static void createBasementColumn(int _amountOfBasements, int _amountOfElevatorPerColumn)
+        public void createBasementColumn(int _amountOfBasements, int _amountOfElevatorPerColumn)
         {
             List<int> servedFloors = new List<int>();
             int floor = -1;
@@ -42,20 +42,21 @@ namespace Commercial_Controller
                 floor--;
             }
 
-            Column column = new Column(columnID, "online", _amountOfBasements, _amountOfElevatorPerColumn, servedFloors, true);
-            this.columnsList.Add(column);
-            columnID--;
+            Column column = new Column(this.columnID, "online", _amountOfBasements, _amountOfElevatorPerColumn, servedFloors, true);
+            columnsList.Add(column);
+            this.columnID--;
         }
 
-        static void createColumns (int _amountOfColumns, int _amountOfFloors, int _amountOfBasements, int _amountOfElevatorPerColumn)
+        public void createColumns (int _amountOfColumns, int _amountOfFloors, int _amountOfElevatorPerColumn)
         {
-            Double amountOfFloorsPerColumn = Math.Round((Double)(_amountOfFloors / _amountOfColumns));
+            int amountOfFloorsPerColumn = (int)Math.Round((Double)(_amountOfFloors / _amountOfColumns));
             floor = 1;
 
-            for(int i = 1; i < _amountOfColumns; i++)
+            for(int i = 0; i < _amountOfColumns; i++)
             {
                 List<int> servedFloors = new List<int>();
-                for(int i = 1; i < amountOfFloorsPerColumn; i++)
+                
+                for(int y = 0; y < amountOfFloorsPerColumn; y++)
                 {
                     if(floor <= _amountOfFloors)
                     {
@@ -63,32 +64,32 @@ namespace Commercial_Controller
                         floor++;
                     }
                 }
-            
-                column = new Column(columnID, "online", _amountOfFloors, _amountOfElevatorPerColumn, servedFloors, false)
+                //Double check here
+                Column column = new Column(this.columnID, "online", _amountOfFloors, _amountOfElevatorPerColumn, servedFloors, false);
                 columnsList.Add(column);
-                columnID++;
+                this.columnID++;
             }
         }
 
         public void createFloorRequestButtons(int _amountOfFloors)
         {
             int buttonFloor = 1;
-            for(int i = 1; i < _amountOfFloors; i++)
+            for(int i = 0; i < _amountOfFloors; i++)
             {
                 FloorRequestButton floorRequestButton = new FloorRequestButton(floorRequestButtonID, "OFF", buttonFloor, "Up");
-                this.floorButtonsList.Add(floorRequestButton);
+                floorRequestButtonsList.Add(floorRequestButton);
                 buttonFloor++;
                 floorRequestButtonID++;
             }
         }
 
-        static void createBasementFloorRequestButtons(int _amountOfBasements)
+        public void createBasementFloorRequestButtons(int _amountOfBasements)
         {
             int buttonFloor = -1;
             for(int i = 0; i >= _amountOfBasements; i++)
             {
                 FloorRequestButton floorRequestButton = new FloorRequestButton(floorRequestButtonID, "OFF", buttonFloor, "Down");
-                floorButtonsList.Add(floorRequestButton);
+                floorRequestButtonsList.Add(floorRequestButton);
                 buttonFloor--;
                 floorRequestButtonID++;
             }
@@ -96,27 +97,29 @@ namespace Commercial_Controller
 
         public Column findBestColumn(int _requestedFloor)
         {
-            foreach(int column in this.columnsList)
+            //Column bestColumn = null;
+            foreach (Column column in this.columnsList)
             {
-                //IF column servedFloorsList CONTAINS _requestedFloor
-                if(column.servedFloorsList(_requestedFloor))
+                if (column.servedFloorsList.Contains(_requestedFloor))
                 {
-                    return column;
+                    Column bestColumn = column;
+                    return bestColumn;
                 }
             }
-            return new Column();
+            return null;
         }
 
         //Simulate when a user press a button at the lobby
         public (Column, Elevator) assignElevator(int _requestedFloor, string _direction)
         {
-            Column column = this.findBestColumn(_requestedFloor);
-            Elevator elevator = column.findElevator(1, _direction);
-            elevator.addNewRequest(1);
-            elevator.move();
+            Column chosenColumn = this.findBestColumn(_requestedFloor);
+            Elevator chosenElevator = chosenColumn.findElevator(1, _direction);
+            chosenElevator.addNewRequest(1);
+            chosenElevator.move();
 
-            elevator.addNewRequest(_requestedFloor);
-            elevator.move();
+            chosenElevator.addNewRequest(_requestedFloor);
+            chosenElevator.move();
+            return(chosenColumn,chosenElevator);
         }
     }
 }
